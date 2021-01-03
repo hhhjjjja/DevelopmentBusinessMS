@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WorkProgressManageDAO">
+
+	<select id="selectPmsProgressList" parameterType="egovframework.com.pms.bud.service.ProjectVO" resultType="egovMap">
+		
+			SELECT  A.과제id proId
+				 ,  A.과제이름 proName
+				 ,  A.기업이름 comName
+				 ,  A.과제내용 proContent
+				 ,  A.과제연도 proDate
+				 ,  A.결과처리날짜 finDate
+				 ,  C.CODE_NM successName
+				 ,  E.CODE_NM typeName
+				 ,  A.과제성공여부 successCode
+				 ,  A.과제유형 typeCode
+				 ,  D.사업id taskId
+				 ,  D.사업이름 taskName
+			  FROM  과제     A
+			     ,  COMTCCMMNDETAILCODE C
+			     ,  공고 D
+			     ,  COMTCCMMNDETAILCODE E
+			 WHERE  C.CODE_ID = 'COM120'
+			   AND  A.과제성공여부= C.CODE
+			   AND  E.CODE_ID = 'COM118'
+			   AND  A.과제유형 = E.CODE
+			   AND  A.사업id=D.사업id
+			   AND  A.과제선정여부='01'
+			   
+			<if test="searchCnd == 1">AND
+				A.기업이름 LIKE CONCAT ('%', #{searchWrd},'%')
+			</if>
+			<if test="searchCnd == 2">AND
+				A.과제이름 LIKE CONCAT ('%', #{searchWrd},'%')
+			</if>
+			<if test="searchCnd == 3">AND
+				D.사업이름 LIKE CONCAT ('%', #{searchWrd},'%')
+			</if>
+
+			
+			ORDER BY A.과제id DESC    
+			LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+			
+	</select>
+
+	<select id="selectPmsProgressListTotCnt" parameterType="egovframework.com.pms.bud.service.ProjectVO" resultType="int">
+		
+			SELECT  COUNT(*) totcnt
+			  FROM  과제     A
+			     ,  COMTCCMMNDETAILCODE C
+			     ,  공고 D
+			     ,  COMTCCMMNDETAILCODE E
+			 WHERE  C.CODE_ID = 'COM120'
+			   AND  A.과제성공여부= C.CODE
+			   AND  E.CODE_ID = 'COM118'
+			   AND  A.과제유형 = E.CODE
+			   AND  A.사업id=D.사업id
+			   AND  A.과제선정여부='01'
+			<if test="searchCnd == 1">AND
+				A.기업이름 LIKE CONCAT ('%', #{searchWrd},'%')
+			</if>
+			<if test="searchCnd == 2">AND
+				A.과제이름 LIKE CONCAT ('%', #{searchWrd},'%')
+			</if>
+	</select>
+
+	<insert id="insertPmsProgress">
+		
+			INSERT
+			  INTO  
+			     (  과제이름
+				 ,  과제내용
+				 ,  과제연도
+				 ,  기업이름
+			     ,  과제유형
+			     ,  사업id
+			     )
+			VALUES
+			     (  
+				    #{proName}
+				 ,  #{proContent}
+				 ,  SYSDATE()
+				 ,  #{comName}
+				 ,  #{typeCode}
+			     ,  #{taskId}
+			     )
+		
+	</insert>
+
+	<select id="selectPmsProgressDetail" parameterType="egovframework.com.pms.bud.service.Project" resultType="egovframework.com.pms.bud.service.Project">
+		
+			SELECT  A.과제id proId
+				 ,  A.과제이름 proName
+				 ,  A.기업이름 comName
+				 ,  A.과제내용 proContent
+				 ,  A.과제연도 proDate
+				 ,  A.결과처리날짜 finDate
+				 ,  C.CODE_NM successName
+				 ,  E.CODE_NM typeName
+				 ,  A.과제성공여부 successCode
+				 ,  A.과제유형 typeCode
+				 ,  D.사업id taskId
+				 ,  D.사업이름 taskName
+			  FROM  과제     A
+			     ,  COMTCCMMNDETAILCODE C
+			     ,  공고 D
+			     ,  COMTCCMMNDETAILCODE E
+			 WHERE  C.CODE_ID = 'COM120'
+			   AND  A.과제성공여부= C.CODE
+			   AND  E.CODE_ID = 'COM118'
+			   AND  A.과제유형 = E.CODE
+			   AND  A.사업id=D.사업id
+			   AND  A.과제선정여부='01'
+               AND  A.과제id      = #{proId}
+		
+	</select>
+
+	<update id="updateWork">
+            UPDATE  과제
+               SET  과제이름 =#{proName}
+                   , 과제유형=#{typeCode}
+                   , 과제내용=#{proContent}
+                    ,기업이름=#{comName}
+             WHERE  과제id  = #{proId}
+		
+	</update>
+	
+	<update id="updatePmsProgress">
+		
+            UPDATE  과제
+               SET  결과처리날짜         = SYSDATE()
+				 ,  과제성공여부    = #{successCode}
+             WHERE  과제id  = #{proId}
+		
+	</update>
+
+	<delete id="deletePmsProgress">
+		
+            DELETE
+              FROM  과제
+             WHERE  과제id = #{proId}
+	</delete>
+
+</mapper>

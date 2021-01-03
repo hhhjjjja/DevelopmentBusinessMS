@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PyunggaDAO">
+	
+	<insert id="insertPyungga">
+		INSERT INTO 평가
+			( 사업id, 과제id, 평가내용, 평가위원id, 시작날짜, 종료날짜 )
+		VALUES
+			(#{task_id}, #{projectid}, #{pyungga}, #{pyunggaid}, #{start}, #{end}) 
+	</insert>
+	
+	
+	 <select id="selectPyungga" parameterType="egovframework.com.pms.pyungga.service.PyunggaVo" resultType="egovMap">
+      SELECT 평가.`평가번호` pNum, 공고.`사업이름` taskNm, 과제.`과제이름` projectName, 평가.`시작날짜` start,평가.`종료날짜` end, 평가.`평가위원id` pyunggaid, 평가.`점수` score,평가.`합격여부` pass ,평가위원.`평가위원이름` pyunggaName
+      FROM 평가,과제,평가위원,공고
+      WHERE 1 = 1 AND 평가.`과제id` = 과제.`과제id` AND 평가.`평가위원id` = 평가위원.`평가위원id` AND 평가.`사업id` = 공고.`사업id` 
+		<if	test='searchCnd == 0'>
+			AND 사업이름 LIKE CONCAT ('%', #{searchWrd}, '%') 
+		</if>
+		<if	test='searchCnd == 1'>
+			AND 평가.합격여부 LIKE CONCAT ('합격%')
+		</if>
+		<if	test='searchCnd == 2'>
+			AND 평가.합격여부 LIKE CONCAT ('%불합격%')
+		</if>
+	
+	</select>
+
+	<select id="selectPyunggaDetail" parameterType="egovframework.com.pms.pyungga.service.Pyungga" resultType="egovframework.com.pms.pyungga.service.Pyungga">
+		SELECT 평가.`평가번호` pNum, 과제.`과제id` projectid, 과제.`과제이름` projectName, 평가.`평가내용` pyungga,평가.`시작날짜` start,평가.`종료날짜` end,평가위원.`평가위원id` pyunggaid,평가위원.`평가위원이름` pyunggawewonname, 평가.`점수` score,평가.`합격여부` pass, 최종여부 = #{final1}
+		FROM 평가,과제,평가위원
+		WHERE 평가.평가번호  = #{pNum} AND 평가.`과제id` = 과제.`과제id` AND 평가.`평가위원id` = 평가위원.`평가위원id`;
+	</select>
+	
+	<update id="updatePyungga">
+		UPDATE 평가
+		SET 평가내용 = #{pyungga}, 시작날짜 = #{start}, 종료날짜 = #{end}, 점수 = #{score}, 합격여부 = #{pass} , 최종여부 = #{final1}
+		WHERE 평가번호 = #{pNum};
+	
+	</update>
+	<delete id="deletePyungga">
+		DELETE
+		FROM 평가
+		WHERE 평가번호 = #{pNum};
+	</delete>
+</mapper>
+
+

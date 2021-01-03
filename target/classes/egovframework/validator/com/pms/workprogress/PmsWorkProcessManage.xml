@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE form-validation PUBLIC 
+    "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1//EN" 
+    "http://jakarta.apache.org/commons/dtds/validator_1_1.dtd">
+
+<form-validation>
+
+    <formset>
+        <form name="pmsprogress">
+			<field property="pr" depends="required, maxlength">
+        		<arg0 key="과제명" resource="true"/>
+        		<arg1 key="50" resource="true"/>
+				<var>
+				<var-name>maxlength</var-name>
+				<var-value>50</var-value>
+				</var>
+			</field> 
+			<field property="comNm" depends="required, maxlength">
+        		<arg0 key="기업명" resource="true"/>
+        		<arg1 key="50" resource="true"/>
+				<var>
+				<var-name>maxlength</var-name>
+				<var-value>50</var-value>
+				</var>
+			</field>  
+			<field property="workDc" depends="required, maxlength">
+        		<arg0 key="상세정보" resource="true"/>
+        		<arg1 key="300" resource="true"/>
+				<var>
+				<var-name>maxlength</var-name>
+				<var-value>300</var-value>
+				</var>
+			</field>
+			<field property="successCode" depends="required">
+        		<arg0 key="과제성공여부" resource="true"/>
+			</field>
+			<field property="pmsrsCode" depends="required">
+        		<arg0 key="사업결과" resource="true"/>
+			</field>
+		</form>
+		
+
+    </formset>
+
+</form-validation>

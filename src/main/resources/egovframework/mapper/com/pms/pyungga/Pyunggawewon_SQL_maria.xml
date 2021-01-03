@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="PyunggawewonDAO">
+	
+
+	<insert id="insertPyunggawewon">
+	
+		INSERT INTO 평가위원 (평가위원id,평가위원이름,평가위원주민등록번호,평가위원소속기관,평가위원연락처,평가위원email,평가위원주소,평가위원입금계좌번호,평가위원경력,평가위원자격증,평가위원논문,평가위원지식재산권,평가위원저서,평가위원소속협회)
+		VALUES
+		(#{pyunggaid},#{pyunggawewonname},#{pyunggawewonidnum},#{pyunggwewoncompanay},#{pyunggawewonphone},#{pyunggawewonemail},#{pyunggwewonadr},#{pyunggawewonaccnum},#{pyunggawewoncareer},#{pyunggwewonsertification},#{pyunggawewononmoon},#{pyunggawewonjeesik},#{pyunggwewonjeoseo},#{pyunggwewonsosok})
+	
+	</insert>
+	
+	<select id="selectPyunggawewon" parameterType="egovframework.com.pms.bud.service.ProjectVO" resultType="egovMap">
+		SELECT `평가위원id` pyunggaid, `평가위원이름` pyunggawewonname, `평가위원소속기관` pyunggwewoncompanay,`평가위원연락처` pyunggawewonphone,`평가위원email` pyunggawewonemail,'평가위원경력' pyunggawewoncareer
+		FROM 평가위원
+		Where 1 = 1
+		<if	test='searchCnd == 0'>
+			AND 평가위원이름 LIKE CONCAT ('%', #{searchWrd}, '%')
+		</if>
+		<if	test='searchCnd == 1'>
+			AND 평가위원소속기관 LIKE CONCAT ('%', #{searchWrd}, '%')
+		</if>
+	</select>
+	
+
+	
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="WorkPerformanceMngDAO">
+
+	<!-- 종료된 사업 리스트 -->
+	<select id="selectProjectInfs" parameterType="egovframework.com.pms.bud.service.ProjectVO" resultType="egovMap">
+		SELECT 사업id task_id, 사업이름 taskNm, 사업내용 taskCntnt, 사업시작날짜 taskStartDate, 사업종료날짜 taskEndDate, 공고파일id atchFileId
+		FROM 공고
+		WHERE SYSDATE() NOT BETWEEN date(사업시작날짜) AND date(사업종료날짜)
+	</select>
+	
+	<!-- 선택한 사업의 참여 기업, 과제 정보-->
+	<select id="selectPerformDetail" parameterType="egovframework.com.pms.workperformance.service.WorkPerformance" resultType="egovMap">
+		SELECT DISTINCT B.과제이름 proNm, B.기업이름 comNm, B.과제내용 proContent, B.과제성공여부 successName, B.과제id proId,
+				A.사업id taskId, A.사업이름 taskNm, A.사업시작날짜 taskStartDate, A.사업종료날짜 taskEndDate
+				
+		FROM 공고 A, 과제 B
+		WHERE A.사업id = B.사업id AND B.사업id = #{taskId} AND B.과제성공여부=01
+	</select>
+	
+	<!-- 과제별 성과정보 조회 -->
+	<select id="selectPerform" parameterType="egovframework.com.pms.workperformance.service.WorkPerformance" resultType="egovMap">
+		SELECT A.성과id performId, A.성과연도 performDate, A.성과분류 performCat, A.사업화매출 take, A.기술료지원액 subTake, A.신규인력 emplNum,
+				A.특허 patent, A.지식재산권 intel, A.논문 article, A.청년채용 youthRecruit, A.비정규직전환 regWorker,
+				B.과제이름 proNm, B.기업이름 comNm, B.과제id proId,
+				SUM(특허) sPatent, SUM(지식재산권) sIntel, SUM(논문) sArticle, SUM(청년채용) sYouth, SUM(신규인력) sEmplNum,
+				SUM(사업화매출) sTake, SUM(기술료지원액) sSubTake, SUM(비정규직전환) sRegWorker
+		FROM 성과 A, 과제 B
+		WHERE A.과제id = #{proId} AND A.과제id = B.과제id
+		GROUP BY A.성과연도
+		ORDER BY A.성과연도 DESC
+	</select>
+	
+	<select	id="categoryClassf" parameterType="egovframework.com.pms.workperformance.service.WorkPerformance" resultType="egovMap">
+		SELECT 성과id performId, 성과연도 performDate, 성과분류 performCat, 사업화매출 take, 기술료지원액 subTake, 신규인력 emplNum,
+				특허 patent, 지식재산권 intel, 논문 article, 청년채용 youthRecruit, 비정규직전환 regWorker, 등록일 updateDate
+		FROM 성과
+		WHERE 과제id = #{proId} AND 성과연도 =#{performDate}
+	</select>
+</mapper>

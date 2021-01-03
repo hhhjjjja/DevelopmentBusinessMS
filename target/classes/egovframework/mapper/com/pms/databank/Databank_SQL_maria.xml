@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DatabankManageDAO">
+
+	<select id="selectDatabankList" parameterType="egovframework.com.pms.databank.service.DatabankVO" resultType="egovMap">
+<!-- 		SELECT 데이터뱅크id dataId, 사업명 bussNm, 기업명 comNm, 데이터뱅크내용 bussEx, 데이터뱅크날짜 date 
+		FROM 데이터뱅크 A, 공고 B
+		WHERE A.사업id = B.사업id
+		<if test="searchCondition == 1">
+				WHERE 사업명 LIKE CONCAT ('%', #{searchKeyword}, '%')
+		</if>
+		<if test="searchCondition == 2">
+				WHERE 기업명 LIKE CONCAT ('%', #{searchKeyword},'%')
+		</if>
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex} -->
+		
+		SELECT A.과제id proId, B.데이터뱅크id dataId, A.과제이름 proNm, A.기업이름 comNm, A.과제내용 proEx, A.과제연도 proDate, B.데이터뱅크날짜 uDate
+		FROM 과제 A, 데이터뱅크 B
+		WHERE A.과제id = B.과제id
+ 		<if test="searchCondition == 1">
+				AND B.과제명 LIKE CONCAT ('%', #{searchKeyword}, '%')
+		</if>
+		<if test="searchCondition == 2">AND
+			 B.기업명 LIKE CONCAT ('%', #{searchKeyword},'%')
+		</if>
+
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+		
+	</select>
+	
+	<!-- 첨부파일 리스트 -->
+	<select id="selectFileList" parameterType="String" resultType="hashmap">
+		SELECT ATCH_FILE_ID fileId, FILE_SIZE fileSize, STRE_FILE_NM streFileNm, ORIGNL_FILE_NM orignlFileNm, FILE_SN fileSn
+		FROM COMTNFILEDETAIL
+		WHERE ATCH_FILE_ID LIKE CONCAT (#{atchFileId})
+	</select>
+	
+	<!-- 첨부파일 cnt -->
+	<select id="selectFileListToCnt" parameterType="String" resultType="int">
+		SELECT COUNT(*)
+		FROM COMTNFILEDETAIL
+		WHERE ATCH_FILE_ID LIKE CONCAT (#{atchFileId})
+	</select>
+	
+	<select id="selectDatabankListTotCnt" parameterType="egovframework.com.pms.databank.service.DatabankVO" resultType="int">
+		SELECT  COUNT(*) totcnt
+		FROM  데이터뱅크
+		<if test="searchCondition == 1">
+			WHERE 과제명 LIKE CONCAT ('%', #{searchKeyword}, '%')
+		</if>
+		<if test="searchCondition == 2">
+			WHERE 기업명 LIKE CONCAT ('%', #{searchKeyword},'%')
+		</if>
+	</select>
+	
+	<insert id="insertDatabank">
+		INSERT INTO 데이터뱅크
+			(데이터뱅크id, 과제명, 기업명, 데이터뱅크내용, 데이터뱅크날짜, 첨부파일id, 과제id)
+		VALUES
+			(#{dataId}, #{bussNm}, #{comNm}, #{bussEx}, SYSDATE(), #{atchFileId}, #{taskId})
+	</insert>
+	
+	<select id="selectDatabankDetail" parameterType="egovframework.com.pms.databank.service.Databank" resultType="egovframework.com.pms.databank.service.Databank">
+		SELECT 데이터뱅크id dataId, 과제명 bussNm, 기업명 comNm, 데이터뱅크내용 bussEx, 데이터뱅크날짜 date, 첨부파일id atchFileId, 과제id taskId
+		FROM 데이터뱅크
+		WHERE 과제id = #{taskId} AND 데이터뱅크id = #{dataId}
+	</select>
+	
+	<delete id="deleteDatabank">
+		DELETE
+		FROM 데이터뱅크
+		WHERE 데이터뱅크id = #{dataId}
+	</delete>
+	
+	<update id="updateDatabank">
+		UPDATE 데이터뱅크
+		SET 과제명 = #{bussNm}, 기업명 = #{comNm}, 데이터뱅크내용 = #{bussEx}, 데이터뱅크날짜 = SYSDATE(), 첨부파일id = #{atchFileId}
+		WHERE 데이터뱅크id = #{dataId}
+	</update>
+	
+	<delete id="deleteFile" parameterType="hashmap">
+		DELETE FROM COMTNFILEDETAIL
+		WHERE ATCH_FILE_ID = #{atchFileId} AND FILE_SN = #{fileSn}
+	</delete>
+</mapper>

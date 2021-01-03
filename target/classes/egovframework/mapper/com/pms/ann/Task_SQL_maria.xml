@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TaskDAO">
+	<select id="selectTaskInfs" parameterType="egovframework.com.pms.ann.service.TaskVO" resultType="egovMap">
+		SELECT 사업id proId, 사업이름 proNm, 사업내용 proEx, 사업시작날짜 sDate, 사업종료날짜 eDate
+		FROM 공고
+ 		<if test="searchCnd == 1">
+				WHERE 사업이름 LIKE CONCAT ('%', #{searchKwd}, '%')
+		</if>
+	</select>
+	
+	<select id="selectComList" parameterType="egovframework.com.pms.ann.service.TaskVO" resultType="egovMap">
+		SELECT DISTINCT A.사업id proId, A.사업이름 proNm, A.사업내용 proEx, A.사업시작날짜 sDate, A.사업종료날짜 eDate, B.과제id asId, B.과제이름 asName, B.기업이름 comName, B.과제선정여부 selectName, B.과제성공여부 successName
+		FROM 공고 A, 과제 B
+		WHERE A.사업id = B.사업id
+	</select>
+	
+	<insert id="insertTask">
+		INSERT
+		INTO 공고
+			(사업id, 사업이름, 사업내용, 사업시작날짜, 사업종료날짜, 공고파일id)
+		VALUES
+			(#{task_id}, #{taskNm}, #{taskCntnt}, #{taskStartDate}, #{taskEndDate}, #{atchFileId})
+	</insert>
+	
+	<insert id="dataInit">
+		INSERT INTO 데이터뱅크
+			(데이터뱅크id, 사업명, 데이터뱅크날짜, 사업id)
+		VALUES
+			(0, #{taskNm}, #{taskStartDate}, #{task_id})
+	</insert>
+	
+	<select id="selectTaskDetail" parameterType="egovframework.com.pms.ann.service.Task" resultType="egovframework.com.pms.ann.service.Task">
+		
+			SELECT 사업id task_id, 사업이름 taskNm, 사업내용 taskCntnt, 사업시작날짜 taskStartDate, 사업종료날짜 taskEndDate
+			FROM 공고
+			WHERE 사업id=#{task_id}
+			
+	</select>
+	
+	<select id="findTaskId" parameterType="egovframework.com.pms.ann.service.Task" resultType="egovframework.com.pms.ann.service.Task">
+			SELECT *
+			FROM 공고
+			WHERE 사업ID=1
+	</select>
+	
+	<select id="findTaskName" parameterType="egovframework.com.pms.ann.service.TaskVO" resultType="egovMap">
+			SELECT 사업이름 taskNm
+			FROM 공고			
+	</select>
+</mapper>

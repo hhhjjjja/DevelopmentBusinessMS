@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BudgetManageDAO">	<!-- namespace -->
+	<select id="selectProjectInfs" parameterType="egovframework.com.pms.bud.service.ProjectVO" resultType="egovMap">
+		SELECT 과제id proId, 과제이름 proName, 과제내용 proContent, 과제연도 proDate, 기업이름 comName, 과제유형 typeName, 과제선정여부 selectName, 과제성공여부 successName
+		FROM 과제
+		WHERE 사업id = #{taskId}
+		<if	test='searchCnd == 0'>
+			AND 과제이름 LIKE CONCAT ('%', #{searchWrd}, '%')
+		</if>
+		<if	test='searchCnd == 1'>
+			AND 과제선정여부 LIKE CONCAT ('%', #{searchWrd}, '%')
+		</if>
+	</select>
+
+	<select id="selectBudgetListInfs" parameterType="egovframework.com.pms.bud.service.ProjectVO" resultType="egovMap">
+		SELECT 예산id budget_id, 과제id project_id, 비목 item, 세목 detail, 세세목 moreDetail, 사용용도 purpose, 최초예산 initBudget, 변경예산 changeBudget, 예산집행여부 isBudgetExecute
+		FROM 예산
+		WHERE 과제id = #{proId}
+		<if	test='searchCnd == 0'>
+			AND 비목 LIKE CONCAT ('%', #{searchWrd}, '%')
+		</if>
+		<if	test='searchCnd == 1'>
+			AND 세목 LIKE CONCAT ('%', #{searchWrd}, '%')
+		</if>
+		<if	test='searchCnd == 1'>
+			AND 세세목 LIKE CONCAT ('%', #{searchWrd}, '%')
+		</if>
+	</select>
+	
+	<select id="insertProjectInfo" parameterType="egovframework.com.pms.bud.service.Project" resultType="egovMap">
+		INSERT INTO 과제 VALUES( NULL, #{proName}, #{proContent}, #{proDate}, #{isSelect}, #{isSuccess})
+	</select>
+	
+	<select id="selectProjectInfo" parameterType="egovframework.com.pms.bud.service.Project" resultType="egovframework.com.pms.bud.service.Project">
+		SELECT 과제id proId, 사업id taskId, 과제이름 proName, 과제내용 proContent, 과제연도 proDate, 기업이름 comName, 과제유형 typeName, 과제선정여부 selectName, 과제성공여부 successName
+		FROM 과제
+		WHERE 과제id = #{proId}
+	</select>
+	
+	<select id="selectTaskInfs" parameterType="egovframework.com.pms.ann.service.TaskVO" resultType="egovMap">
+		SELECT 사업id taskId, 사업이름 taskName, 사업내용 taskContent, 사업시작날짜 taskSrtDate, 사업종료날짜 taskEndDate, 공고파일id taskFileId
+		FROM 공고
+		WHERE 1=1
+		<if	test='searchCnd == 0'>
+			AND 사업이름 LIKE CONCAT ('%', #{searchWrd}, '%')
+		</if>
+		<if	test='searchCnd == 1'>
+			AND 사업내용 LIKE CONCAT ('%', #{searchWrd}, '%')
+		</if>
+	</select>
+	
+	<select id="insertBudgetInfo" parameterType="egovframework.com.pms.bud.service.Budget" resultType="egovMap">
+		INSERT INTO 예산 VALUES( NULL, #{project_id}, #{item}, #{detail}, #{moreDetail}, #{purpose}, #{initBudget}, #{changeBudget}, #{budgetExecuteIs})
+	</select>
+</mapper>
